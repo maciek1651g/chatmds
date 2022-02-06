@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+import { MatSelectionListChange } from "@angular/material/list";
 
 @Component({
     selector: "app-root",
@@ -6,6 +7,12 @@ import { Component } from "@angular/core";
     styleUrls: ["./app.component.css"],
 })
 export class AppComponent {
-    title = "chatmds";
-    showFiller = false;
+    title: string = "chatmds";
+    optionMenu: number = 1;
+
+    onSelectOptionMenu(event: MatSelectionListChange): void {
+        const first = 0;
+        const numberOfOptionMenu = event.options[first].value;
+        this.optionMenu = numberOfOptionMenu;
+    }
 }

@@ -1,21 +1,29 @@
 <div class="global-container">
     <div style="height: 7%">
-        <app-header></app-header>
+        <app-header (menuButtonClick)="drawer.toggle()"></app-header>
     </div>
     <div style="height: 93%">
         <mat-drawer-container class="container" autosize>
             <mat-drawer #drawer class="sidenav" mode="side" opened>
-                <mat-list role="list">
-                    <mat-list-item role="listitem">Item 1</mat-list-item>
-                    <mat-list-item role="listitem">Item 2</mat-list-item>
-                    <mat-list-item role="listitem">Item 3</mat-list-item>
-                </mat-list>
+                <mat-selection-list
+                    (selectionChange)="onSelectOptionMenu($event)"
+                    class="nav-list"
+                    [multiple]="false"
+                >
+                    <mat-list-option [value]="1" selected> Home</mat-list-option>
+                    <mat-list-option [value]="2"> Home2</mat-list-option>
+                    <mat-list-option [value]="3"> Home3</mat-list-option>
+                    <mat-list-option [value]="4"> Home4</mat-list-option>
+                    <mat-list-option [value]="5"> Home5</mat-list-option>
+                </mat-selection-list>
             </mat-drawer>
 
             <div class="sidenav-content">
-                <button type="button" mat-button (click)="drawer.toggle()">
-                    Toggle sidenav
-                </button>
+                <container-element [ngSwitch]="optionMenu">
+                    <div *ngSwitchCase="1">Home</div>
+                    <div *ngSwitchCase="2">Home2</div>
+                    <div *ngSwitchCase="3">Home3</div>
+                </container-element>
             </div>
         </mat-drawer-container>
     </div>
