@@ -24,3 +24,8 @@
     display: block;
     -webkit-tap-highlight-color: transparent;
 }
+
+.divider {
+    border-top-width: 2px;
+    border-top-color: #777;
+}

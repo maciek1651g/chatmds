@@ -10,6 +10,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { MatListModule } from "@angular/material/list";
+import { FormsModule } from "@angular/forms";
 
 @NgModule({
     declarations: [AppComponent, HeaderComponent],
@@ -22,6 +23,7 @@ import { MatListModule } from "@angular/material/list";
         MatSidenavModule,
         MatGridListModule,
         MatListModule,
+        FormsModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

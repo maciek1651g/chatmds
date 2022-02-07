@@ -10,19 +10,35 @@
                     class="nav-list"
                     [multiple]="false"
                 >
-                    <mat-list-option [value]="1" selected> Home</mat-list-option>
-                    <mat-list-option [value]="2"> Home2</mat-list-option>
-                    <mat-list-option [value]="3"> Home3</mat-list-option>
-                    <mat-list-option [value]="4"> Home4</mat-list-option>
-                    <mat-list-option [value]="5"> Home5</mat-list-option>
+                    <mat-list-option [value]="1" selected>
+                        Strona główna
+                    </mat-list-option>
+                    <mat-divider class="divider"></mat-divider>
+                    <ng-container *ngFor="let room of Rooms">
+                        <mat-list-option
+                            [value]="room.id"
+                            [selected]="optionMenu === room.id"
+                        >
+                            {{ room.name }}
+                        </mat-list-option>
+                    </ng-container>
+                    <mat-divider class="divider"></mat-divider>
+                    <button
+                        mat-flat-button
+                        class="mat-list-item"
+                        (click)="addRoom()"
+                    >
+                        <mat-icon matListIcon>add</mat-icon>
+                    </button>
                 </mat-selection-list>
             </mat-drawer>
 
             <div class="sidenav-content">
                 <container-element [ngSwitch]="optionMenu">
                     <div *ngSwitchCase="1">Home</div>
-                    <div *ngSwitchCase="2">Home2</div>
-                    <div *ngSwitchCase="3">Home3</div>
+                    <ng-container *ngFor="let room of Rooms">
+                        <div *ngSwitchCase="room.id">{{ room.name }}</div>
+                    </ng-container>
                 </container-element>
             </div>
         </mat-drawer-container>
