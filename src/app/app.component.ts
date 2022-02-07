@@ -1,11 +1,6 @@
 import { Component } from "@angular/core";
 import { MatSelectionListChange } from "@angular/material/list";
-
-interface Room {
-    id: number;
-    name: string;
-    messages: Array<string>;
-}
+import { Room } from "./assets/roomInterface";
 
 @Component({
     selector: "app-root",
@@ -19,7 +14,7 @@ export class AppComponent {
 
     addRoom(): void {
         let idRoom = this.Rooms.length + 2;
-        this.Rooms.push({ id: idRoom, messages: [], name: "Pokój " + idRoom });
+        this.Rooms.push({ id: idRoom, messages: [], name: "Pokój " + (idRoom - 1) });
         this.optionMenu = idRoom;
     }
 

@@ -11,9 +11,13 @@ import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { MatListModule } from "@angular/material/list";
 import { FormsModule } from "@angular/forms";
+import { MainPageComponent } from "./assets/main-page/main-page.component";
+import { RoomComponent } from "./assets/room/room.component";
+import { MatInputModule } from "@angular/material/input";
+import { InputTextModule } from "primeng/inputtext";
 
 @NgModule({
-    declarations: [AppComponent, HeaderComponent],
+    declarations: [AppComponent, HeaderComponent, MainPageComponent, RoomComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
@@ -24,6 +28,8 @@ import { FormsModule } from "@angular/forms";
         MatGridListModule,
         MatListModule,
         FormsModule,
+        MatInputModule,
+        InputTextModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

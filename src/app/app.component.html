@@ -1,8 +1,8 @@
 <div class="global-container">
-    <div style="height: 7%">
+    <div style="height: 6%">
         <app-header (menuButtonClick)="drawer.toggle()"></app-header>
     </div>
-    <div style="height: 93%">
+    <div style="height: 94%">
         <mat-drawer-container class="container" autosize>
             <mat-drawer #drawer class="sidenav" mode="side" opened>
                 <mat-selection-list
@@ -35,9 +35,9 @@
 
             <div class="sidenav-content">
                 <container-element [ngSwitch]="optionMenu">
-                    <div *ngSwitchCase="1">Home</div>
+                    <app-main-page *ngSwitchCase="1"></app-main-page>
                     <ng-container *ngFor="let room of Rooms">
-                        <div *ngSwitchCase="room.id">{{ room.name }}</div>
+                        <app-room *ngSwitchCase="room.id" [room]="room"></app-room>
                     </ng-container>
                 </container-element>
             </div>

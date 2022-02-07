@@ -1,0 +1,22 @@
+<div style="height: 100%; width: 100%">
+    <mat-toolbar color="primary" class="mat-toolbar toolbar">
+        <div
+            *ngIf="!editNameMode; else editMode"
+            style="display: flex; align-items: center; justify-content: center"
+        >
+            <span>{{ room.name }}</span>
+            <button mat-icon-button (click)="editNameMode = true">
+                <mat-icon>edit</mat-icon>
+            </button>
+        </div>
+        <ng-template #editMode>
+            <div style="display: flex; align-items: center; justify-content: center">
+                <input pInputText [(ngModel)]="room.name" type="text" />
+                <button mat-icon-button (click)="editNameMode = false">
+                    <mat-icon>save</mat-icon>
+                </button>
+            </div>
+        </ng-template>
+    </mat-toolbar>
+    <div class="main-content"></div>
+</div>
