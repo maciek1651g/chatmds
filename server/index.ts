@@ -24,6 +24,11 @@ app.all("*", function (req, res, next) {
 
 io.on("connection", (socket) => {
     console.log("Połączono");
+
+    socket.on("createRoom", (message, fn) => {
+        socket.join(io.engine.generateId());
+        fn("asd");
+    });
 });
 
 httpServer.listen(port, function () {
