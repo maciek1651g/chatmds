@@ -12,6 +12,7 @@ var httpServer = createServer(app);
 var io = new Server(httpServer, {
 /* options */
 });
+var rooms = new Map();
 app.use(compression());
 app.use(express.static("client", { maxAge: 3600000 }));
 app.all("*", function (req, res, next) {
@@ -19,11 +20,38 @@ app.all("*", function (req, res, next) {
 });
 io.on("connection", function (socket) {
     console.log("Połączono");
-    socket.on("createRoom", function (name, fn) {
-        socket.join(io.engine.generateId());
-        console.log(name);
-        fn("asd");
+    socket.on("createRoom", function (message, fn) {
+        var roomID;
+        do {
+            roomID = io.engine.generateId();
+        } while (rooms.has(roomID));
+        var room = { id: roomID, messages: [] };
+        rooms.set(roomID, room);
+        socket.join(roomID);
+        fn(room);
     });
+    socket.on("joinRoom", function (roomID, fn) {
+        if (rooms.has(roomID)) {
+            socket.join(roomID);
+            fn(rooms.get(roomID));
+        }
+        else {
+            fn(null);
+        }
+    });
+});
+io.of("/").adapter.on("leave-room", function (roomID, id) {
+    console.log("socket ".concat(id, " has left room ").concat(roomID));
+    var room = rooms.get(roomID);
+    if (room) {
+        io.to(roomID).emit("someoneLeaveRoom");
+    }
+});
+io.of("/").adapter.on("delete-room", function (roomID) {
+    console.log("room ".concat(roomID, " was deleted"));
+    if (rooms.has(roomID)) {
+        rooms.delete(roomID);
+    }
 });
 httpServer.listen(port, function () {
     console.log("listening on *:" + port);

@@ -1,5 +1,6 @@
 import { Injectable, OnInit } from "@angular/core";
 import { io, Socket } from "socket.io-client";
+import RoomDto from "../../../../commonAssets/Room";
 
 @Injectable({
     providedIn: "root",
@@ -8,7 +9,7 @@ export class SocketService implements OnInit {
     socket: Socket;
 
     constructor() {
-        this.socket = io("http://localhost:4200/");
+        this.socket = io();
     }
 
     ngOnInit(): void {
@@ -16,8 +17,7 @@ export class SocketService implements OnInit {
     }
 
     createRoom(): void {
-        console.log("createRoom");
-        this.socket.emit("createRoom", null, (data: any) => {
+        this.socket.emit("createRoom", null, (data: RoomDto) => {
             console.log(data);
         });
     }

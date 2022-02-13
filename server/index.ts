@@ -4,6 +4,7 @@ import { Server } from "socket.io";
 import path from "path";
 import compression from "compression";
 import { fileURLToPath } from "url";
+import Room from "../commonAssets/Room";
 
 const port = process.env["PORT"] || 3000;
 const __filename = fileURLToPath(import.meta.url);
@@ -14,6 +15,8 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
     /* options */
 });
+
+const rooms: Map<string, Room> = new Map<string, Room>();
 
 app.use(compression());
 app.use(express.static("client", { maxAge: 3600000 }));
@@ -26,9 +29,41 @@ io.on("connection", (socket) => {
     console.log("Połączono");
 
     socket.on("createRoom", (message, fn) => {
-        socket.join(io.engine.generateId());
-        fn("asd");
+        let roomID: string;
+        do {
+            roomID = io.engine.generateId();
+        } while (rooms.has(roomID));
+
+        const room: Room = { id: roomID, messages: [] };
+        rooms.set(roomID, room);
+        socket.join(roomID);
+        fn(room);
     });
+
+    socket.on("joinRoom", (roomID, fn) => {
+        if (rooms.has(roomID)) {
+            socket.join(roomID);
+            fn(rooms.get(roomID));
+        } else {
+            fn(null);
+        }
+    });
+});
+
+io.of("/").adapter.on("leave-room", (roomID: string, id: string) => {
+    console.log(`socket ${id} has left room ${roomID}`);
+
+    const room = rooms.get(roomID);
+    if (room) {
+        io.to(roomID).emit("someoneLeaveRoom");
+    }
+});
+
+io.of("/").adapter.on("delete-room", (roomID: string) => {
+    console.log(`room ${roomID} was deleted`);
+    if (rooms.has(roomID)) {
+        rooms.delete(roomID);
+    }
 });
 
 httpServer.listen(port, function () {
