@@ -1,22 +1,93 @@
 <div style="height: 100%; width: 100%">
     <mat-toolbar color="primary" class="mat-toolbar toolbar">
         <div
-            *ngIf="!editNameMode; else editMode"
-            style="display: flex; align-items: center; justify-content: center"
+            style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+            "
         >
-            <span>{{ room.name }}</span>
-            <button mat-icon-button (click)="editNameMode = true">
-                <mat-icon>edit</mat-icon>
-            </button>
-        </div>
-        <ng-template #editMode>
-            <div style="display: flex; align-items: center; justify-content: center">
-                <input pInputText [(ngModel)]="room.name" type="text" />
-                <button mat-icon-button (click)="editNameMode = false">
-                    <mat-icon>save</mat-icon>
+            <div
+                style="display: flex; align-items: center"
+                *ngIf="!editNameMode; else editMode"
+            >
+                <span>{{ room.name }}</span>
+                <button mat-icon-button (click)="editNameMode = true">
+                    <mat-icon>edit</mat-icon>
                 </button>
             </div>
-        </ng-template>
+            <ng-template #editMode>
+                <div style="display: flex; align-items: center">
+                    <input
+                        pInputText
+                        [(ngModel)]="room.name"
+                        type="text"
+                        class="p-inputtext-sm"
+                    />
+                    <button mat-icon-button (click)="editNameMode = false">
+                        <mat-icon>save</mat-icon>
+                    </button>
+                </div>
+            </ng-template>
+            <div>
+                <p
+                    style="margin: 0; cursor: pointer"
+                    matTooltip="Prześlij ID pokoju innym użytkownikom by mogli się z Tobą połączyć"
+                    (click)="copyRoomID()"
+                >
+                    ID pokoju: <span>{{ room.roomID }}</span>
+                </p>
+            </div>
+        </div>
     </mat-toolbar>
-    <div class="main-content"></div>
+    <div class="main-content">
+        <div
+            style="
+                height: 94%;
+                display: flex;
+                flex-direction: column;
+                justify-content: end;
+            "
+        >
+            <div class="current-user-messages">
+                <div
+                    style="
+                        width: 150px;
+                        height: 40px;
+                        background-color: aqua;
+                        border-radius: 40px;
+                    "
+                ></div>
+            </div>
+            <div class="other-user-messages">
+                <div
+                    style="
+                        width: 150px;
+                        height: 40px;
+                        background-color: #777777;
+                        border-radius: 40px;
+                    "
+                ></div>
+            </div>
+        </div>
+        <div
+            style="
+                height: 6%;
+                padding: 4px;
+                box-sizing: border-box;
+                border-top: 1px solid #e0e0e0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            "
+        >
+            <input
+                pInputText
+                type="text"
+                class="p-inputtext-sm chat-input"
+                placeholder="Aa"
+            />
+        </div>
+    </div>
 </div>

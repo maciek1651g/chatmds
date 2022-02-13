@@ -15,6 +15,8 @@ import { MainPageComponent } from "./assets/main-page/main-page.component";
 import { RoomComponent } from "./assets/room/room.component";
 import { MatInputModule } from "@angular/material/input";
 import { InputTextModule } from "primeng/inputtext";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 @NgModule({
     declarations: [AppComponent, HeaderComponent, MainPageComponent, RoomComponent],
@@ -30,6 +32,8 @@ import { InputTextModule } from "primeng/inputtext";
         FormsModule,
         MatInputModule,
         InputTextModule,
+        MatTooltipModule,
+        MatSnackBarModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

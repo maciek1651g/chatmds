@@ -16,9 +16,9 @@ export class SocketService implements OnInit {
         console.log("asd");
     }
 
-    createRoom(): void {
+    createRoom(callback: (a: RoomDto) => void): void {
         this.socket.emit("createRoom", null, (data: RoomDto) => {
-            console.log(data);
+            callback(data);
         });
     }
 }
