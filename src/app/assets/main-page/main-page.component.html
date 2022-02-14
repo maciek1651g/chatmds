@@ -29,9 +29,20 @@
                     <button mat-raised-button color="primary" style="margin: 10px 0">
                         Dodaj pokój
                     </button>
-                    <button mat-raised-button color="primary" style="margin: 10px 0">
+                    <button
+                        mat-raised-button
+                        color="primary"
+                        style="margin: 10px 0"
+                        (click)="joinRoom()"
+                    >
                         Dołącz do pokoju
                     </button>
+                    <input
+                        pInputText
+                        type="text"
+                        [(ngModel)]="roomID"
+                        placeholder="Wpisz ID pokoju"
+                    />
                 </div>
             </div>
             <div

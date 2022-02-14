@@ -1,15 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from "@angular/core";
+import { SocketService } from "../socketio/socket.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
-  selector: 'app-main-page',
-  templateUrl: './main-page.component.html',
-  styleUrls: ['./main-page.component.css']
+    selector: "app-main-page",
+    templateUrl: "./main-page.component.html",
+    styleUrls: ["./main-page.component.css"],
 })
-export class MainPageComponent implements OnInit {
+export class MainPageComponent {
+    roomID: string = "";
 
-  constructor() { }
+    constructor(private socket: SocketService, private snackBar: MatSnackBar) {}
 
-  ngOnInit(): void {
-  }
-
+    joinRoom(): void {
+        this.socket.joinRoom(this.roomID, (success) => {
+            if (!success) {
+                this.snackBar.open("Nie znaleziono pokoju o takim ID", "Zamknij", {
+                    duration: 1500,
+                    horizontalPosition: "end",
+                    verticalPosition: "top",
+                });
+            }
+        });
+    }
 }
