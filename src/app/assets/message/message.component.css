@@ -1,0 +1,21 @@
+.user-messages {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 45px;
+    padding: 5px;
+}
+
+.message-container {
+    display: flex;
+    align-items: center;
+    background-color: aqua;
+    border-radius: 30px;
+    padding: 8px 16px;
+    max-width: 70%;
+}
+
+.message {
+    margin: 0;
+    word-break: break-word;
+}

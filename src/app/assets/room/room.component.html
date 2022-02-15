@@ -42,46 +42,15 @@
         </div>
     </mat-toolbar>
     <div class="main-content">
-        <div
-            style="
-                height: 94%;
-                display: flex;
-                flex-direction: column;
-                justify-content: end;
-            "
-        >
-            <div class="current-user-messages">
-                <div
-                    style="
-                        width: 150px;
-                        height: 40px;
-                        background-color: aqua;
-                        border-radius: 40px;
-                    "
-                ></div>
-            </div>
-            <div class="other-user-messages">
-                <div
-                    style="
-                        width: 150px;
-                        height: 40px;
-                        background-color: #777777;
-                        border-radius: 40px;
-                    "
-                ></div>
-            </div>
+        <div class="chat-container">
+            <ng-container *ngFor="let message of room.messages">
+                <app-message
+                    [message]="message.text"
+                    [isCurrentUserMessage]="message.isCurrenUserMessage"
+                ></app-message>
+            </ng-container>
         </div>
-        <div
-            style="
-                height: 6%;
-                padding: 4px;
-                box-sizing: border-box;
-                border-top: 1px solid #e0e0e0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            "
-        >
+        <div class="input-container">
             <input
                 pInputText
                 type="text"

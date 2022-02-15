@@ -1,0 +1,16 @@
+<div
+    class="user-messages"
+    [ngStyle]="{
+        'justify-content': isCurrentUserMessage ? 'flex-end' : 'flex-start'
+    }"
+>
+    <div
+        class="message-container"
+        [ngStyle]="{
+            'background-color': isCurrentUserMessage ? '#0084ff' : '#e4e6eb',
+            color: isCurrentUserMessage ? 'white' : 'black'
+        }"
+    >
+        <p class="message">{{ message }}</p>
+    </div>
+</div>

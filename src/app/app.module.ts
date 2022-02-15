@@ -17,9 +17,10 @@ import { MatInputModule } from "@angular/material/input";
 import { InputTextModule } from "primeng/inputtext";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { MessageComponent } from './assets/message/message.component';
 
 @NgModule({
-    declarations: [AppComponent, HeaderComponent, MainPageComponent, RoomComponent],
+    declarations: [AppComponent, HeaderComponent, MainPageComponent, RoomComponent, MessageComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
