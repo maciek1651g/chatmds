@@ -8,6 +8,8 @@
     "allowSyntheticDefaultImports": true
   },
   "files": [
-    "index.ts"
+    "index.ts",
+    "../commonAssets/Room.ts",
+    "../commonAssets/MessageDto.ts"
   ]
 }

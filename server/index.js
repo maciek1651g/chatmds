@@ -39,6 +39,12 @@ io.on("connection", function (socket) {
             fn(null);
         }
     });
+    socket.on("sendMessage", function (messageDto, fn) {
+        var _a;
+        (_a = rooms.get(messageDto.roomID)) === null || _a === void 0 ? void 0 : _a.messages.push(messageDto.text);
+        socket.broadcast.to(messageDto.roomID).emit("newMessage", messageDto);
+        fn();
+    });
 });
 io.of("/").adapter.on("leave-room", function (roomID, id) {
     console.log("socket ".concat(id, " has left room ").concat(roomID));

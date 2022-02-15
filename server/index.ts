@@ -5,6 +5,7 @@ import path from "path";
 import compression from "compression";
 import { fileURLToPath } from "url";
 import Room from "../commonAssets/Room";
+import MessageDto from "../commonAssets/MessageDto";
 
 const port = process.env["PORT"] || 3000;
 const __filename = fileURLToPath(import.meta.url);
@@ -28,7 +29,7 @@ app.all("*", function (req, res, next) {
 io.on("connection", (socket) => {
     console.log("Połączono");
 
-    socket.on("createRoom", (message, fn) => {
+    socket.on("createRoom", (message: null, fn) => {
         let roomID: string;
         do {
             roomID = io.engine.generateId();
@@ -40,13 +41,19 @@ io.on("connection", (socket) => {
         fn(room);
     });
 
-    socket.on("joinRoom", (roomID, fn) => {
+    socket.on("joinRoom", (roomID: string, fn) => {
         if (rooms.has(roomID)) {
             socket.join(roomID);
             fn(rooms.get(roomID));
         } else {
             fn(null);
         }
+    });
+
+    socket.on("sendMessage", (messageDto: MessageDto, fn) => {
+        rooms.get(messageDto.roomID)?.messages.push(messageDto.text);
+        socket.broadcast.to(messageDto.roomID).emit("newMessage", messageDto);
+        fn();
     });
 });
 

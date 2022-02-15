@@ -5,7 +5,6 @@ import MessageDto from "../../../../commonAssets/MessageDto";
 import { Room } from "../roomInterface";
 import { BehaviorSubject } from "rxjs";
 
-
 @Injectable({
     providedIn: "root",
 })
@@ -18,6 +17,9 @@ export class SocketService {
 
     constructor() {
         this.socket = io();
+        this.socket.on("newMessage", (messageDto: MessageDto) => {
+            this.addMessage(messageDto, false);
+        });
     }
 
     createRoom(callback?: () => void): void {
@@ -35,14 +37,18 @@ export class SocketService {
         });
     }
 
-    sendMessage(message: string, roomID: string, callback: () => void): void {
-        this.socket.emit("sendMessage", { text: message, roomID: roomID }: MessageDto, () => {
-            console.log("Wysłano wiadomość");
-            callback();
+    sendMessage(message: string, roomID: string, callback?: () => void): void {
+        const messageDto: MessageDto = { text: message, roomID: roomID };
+        this.socket.emit("sendMessage", messageDto, () => {
+            this.addMessage(messageDto, true);
+            if (callback) {
+                callback();
+            }
         });
     }
 
     private addRoom(roomDto: RoomDto): void {
+        console.log(roomDto);
         const idRoom = this.rooms.length + 2;
         this.rooms.push({
             messages: roomDto.messages.map((message) => ({
@@ -52,5 +58,17 @@ export class SocketService {
             name: "Pokój " + (idRoom - 1),
             roomID: roomDto.id,
         });
+    }
+
+    private addMessage(messageDto: MessageDto, isCurrentUserMessage: boolean) {
+        for (let i = 0; i < this.rooms.length; i++) {
+            if (this.rooms[i].roomID === messageDto.roomID) {
+                this.rooms[i].messages.push({
+                    text: messageDto.text,
+                    isCurrenUserMessage: isCurrentUserMessage,
+                });
+                break;
+            }
+        }
     }
 }

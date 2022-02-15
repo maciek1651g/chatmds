@@ -56,7 +56,11 @@
                 type="text"
                 class="p-inputtext-sm chat-input"
                 placeholder="Aa"
+                [(ngModel)]="message"
             />
+            <button mat-flat-button class="mat-list-item" (click)="sendMessage()">
+                <mat-icon matListIcon>send</mat-icon>
+            </button>
         </div>
     </div>
 </div>

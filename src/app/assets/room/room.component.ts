@@ -1,6 +1,7 @@
 import { Component, Input } from "@angular/core";
 import { Room } from "../roomInterface";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { SocketService } from "../socketio/socket.service";
 
 @Component({
     selector: "app-room",
@@ -10,8 +11,9 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 export class RoomComponent {
     @Input() room!: Room;
     editNameMode = false;
+    message?: string;
 
-    constructor(private snackBar: MatSnackBar) {}
+    constructor(private snackBar: MatSnackBar, private socket: SocketService) {}
 
     copyRoomID() {
         navigator.clipboard.writeText(this.room.roomID);
@@ -20,5 +22,11 @@ export class RoomComponent {
             horizontalPosition: "end",
             verticalPosition: "top",
         });
+    }
+
+    sendMessage() {
+        if (this.message && this.message !== "") {
+            this.socket.sendMessage(this.message, this.room.roomID);
+        }
     }
 }
