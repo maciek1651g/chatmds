@@ -25,13 +25,19 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     addRoom(): void {
-        this.socket.createRoom();
+        this.socket.createRoom(() => {
+            this.focusOnLastAddedRoom();
+        });
     }
 
     onSelectOptionMenu(event: MatSelectionListChange): void {
         const first = 0;
         const numberOfOptionMenu = event.options[first].value;
         this.optionMenu = numberOfOptionMenu;
+    }
+
+    focusOnLastAddedRoom() {
+        this.optionMenu = this.rooms.length + 1;
     }
 
     ngOnDestroy(): void {

@@ -27,6 +27,7 @@ export class RoomComponent {
     sendMessage() {
         if (this.message && this.message !== "") {
             this.socket.sendMessage(this.message, this.room.roomID);
+            this.message = "";
         }
     }
 }

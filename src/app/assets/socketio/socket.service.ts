@@ -25,6 +25,9 @@ export class SocketService {
     createRoom(callback?: () => void): void {
         this.socket.emit("createRoom", null, (data: RoomDto) => {
             this.addRoom(data);
+            if (callback) {
+                callback();
+            }
         });
     }
 
@@ -48,7 +51,6 @@ export class SocketService {
     }
 
     private addRoom(roomDto: RoomDto): void {
-        console.log(roomDto);
         const idRoom = this.rooms.length + 2;
         this.rooms.push({
             messages: roomDto.messages.map((message) => ({

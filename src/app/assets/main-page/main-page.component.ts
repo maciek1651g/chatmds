@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { SocketService } from "../socketio/socket.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
@@ -8,6 +8,8 @@ import { MatSnackBar } from "@angular/material/snack-bar";
     styleUrls: ["./main-page.component.css"],
 })
 export class MainPageComponent {
+    @Output() addNewRoom = new EventEmitter<void>();
+    @Output() joinToNewRoom = new EventEmitter<void>();
     roomID: string = "";
 
     constructor(private socket: SocketService, private snackBar: MatSnackBar) {}
@@ -20,6 +22,8 @@ export class MainPageComponent {
                     horizontalPosition: "end",
                     verticalPosition: "top",
                 });
+            } else {
+                this.joinToNewRoom.emit();
             }
         });
     }

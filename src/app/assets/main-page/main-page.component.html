@@ -26,7 +26,12 @@
                 "
             >
                 <div style="width: 80%; display: flex; flex-direction: column">
-                    <button mat-raised-button color="primary" style="margin: 10px 0">
+                    <button
+                        mat-raised-button
+                        color="primary"
+                        style="margin: 10px 0"
+                        (click)="addNewRoom.emit()"
+                    >
                         Dodaj pokój
                     </button>
                     <button

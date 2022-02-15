@@ -57,8 +57,14 @@
                 class="p-inputtext-sm chat-input"
                 placeholder="Aa"
                 [(ngModel)]="message"
+                (keyup.enter)="sendMessage()"
             />
-            <button mat-flat-button class="mat-list-item" (click)="sendMessage()">
+            <button
+                mat-flat-button
+                class="mat-list-item"
+                (click)="sendMessage()"
+                type="submit"
+            >
                 <mat-icon matListIcon>send</mat-icon>
             </button>
         </div>
