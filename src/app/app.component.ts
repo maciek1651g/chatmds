@@ -21,23 +21,22 @@ export class AppComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.socket.observableRooms
             .pipe(takeUntil(this.destroy$))
-            .subscribe((rooms) => (this.rooms = rooms));
+            .subscribe((rooms) => this.onChangeRooms(rooms));
+    }
+
+    onChangeRooms(rooms: Room[]) {
+        this.rooms = rooms;
+        this.optionMenu = this.rooms.length + 1;
     }
 
     addRoom(): void {
-        this.socket.createRoom(() => {
-            this.focusOnLastAddedRoom();
-        });
+        this.socket.createRoom();
     }
 
     onSelectOptionMenu(event: MatSelectionListChange): void {
         const first = 0;
         const numberOfOptionMenu = event.options[first].value;
         this.optionMenu = numberOfOptionMenu;
-    }
-
-    focusOnLastAddedRoom() {
-        this.optionMenu = this.rooms.length + 1;
     }
 
     ngOnDestroy(): void {

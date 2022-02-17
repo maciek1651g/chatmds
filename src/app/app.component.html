@@ -37,7 +37,6 @@
                 <container-element [ngSwitch]="optionMenu">
                     <app-main-page
                         *ngSwitchCase="1"
-                        (joinToNewRoom)="focusOnLastAddedRoom()"
                         (addNewRoom)="addRoom()"
                     ></app-main-page>
                     <ng-container *ngFor="let room of rooms; let i = index">

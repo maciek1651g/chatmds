@@ -50,6 +50,16 @@ io.on("connection", (socket) => {
         }
     });
 
+    socket.on("leaveRoom", (roomID: string, fn) => {
+        console.log();
+        if (rooms.has(roomID)) {
+            socket.leave(roomID);
+            fn(true);
+        } else {
+            fn(false);
+        }
+    });
+
     socket.on("sendMessage", (messageDto: MessageDto, fn) => {
         rooms.get(messageDto.roomID)?.messages.push(messageDto.text);
         socket.broadcast.to(messageDto.roomID).emit("newMessage", messageDto);

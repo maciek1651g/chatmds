@@ -9,7 +9,6 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 })
 export class MainPageComponent {
     @Output() addNewRoom = new EventEmitter<void>();
-    @Output() joinToNewRoom = new EventEmitter<void>();
     roomID: string = "";
 
     constructor(private socket: SocketService, private snackBar: MatSnackBar) {}
@@ -22,8 +21,6 @@ export class MainPageComponent {
                     horizontalPosition: "end",
                     verticalPosition: "top",
                 });
-            } else {
-                this.joinToNewRoom.emit();
             }
         });
     }

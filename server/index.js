@@ -39,6 +39,16 @@ io.on("connection", function (socket) {
             fn(null);
         }
     });
+    socket.on("leaveRoom", function (roomID, fn) {
+        console.log();
+        if (rooms.has(roomID)) {
+            socket.leave(roomID);
+            fn(true);
+        }
+        else {
+            fn(false);
+        }
+    });
     socket.on("sendMessage", function (messageDto, fn) {
         var _a;
         (_a = rooms.get(messageDto.roomID)) === null || _a === void 0 ? void 0 : _a.messages.push(messageDto.text);

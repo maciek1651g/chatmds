@@ -40,6 +40,21 @@ export class SocketService {
         });
     }
 
+    leaveRoom(roomID: string, callback?: (a: boolean) => void): void {
+        this.socket.emit("leaveRoom", roomID, (status: boolean) => {
+            if (status) {
+                this.deleteRoom(roomID);
+                if (callback) {
+                    callback(true);
+                }
+            } else {
+                if (callback) {
+                    callback(false);
+                }
+            }
+        });
+    }
+
     sendMessage(message: string, roomID: string, callback?: () => void): void {
         const messageDto: MessageDto = { text: message, roomID: roomID };
         this.socket.emit("sendMessage", messageDto, () => {
@@ -60,6 +75,7 @@ export class SocketService {
             name: "Pokój " + (idRoom - 1),
             roomID: roomDto.id,
         });
+        this.observableRooms.next(this.rooms);
     }
 
     private addMessage(messageDto: MessageDto, isCurrentUserMessage: boolean) {
@@ -69,6 +85,16 @@ export class SocketService {
                     text: messageDto.text,
                     isCurrenUserMessage: isCurrentUserMessage,
                 });
+                break;
+            }
+        }
+    }
+
+    private deleteRoom(roomID: string) {
+        for (let i = 0; i < this.rooms.length; i++) {
+            if (this.rooms[i].roomID === roomID) {
+                this.rooms.splice(i, 1);
+                this.observableRooms.next(this.rooms);
                 break;
             }
         }

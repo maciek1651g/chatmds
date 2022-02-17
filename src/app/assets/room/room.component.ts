@@ -30,4 +30,8 @@ export class RoomComponent {
             this.message = "";
         }
     }
+
+    leaveRoom(): void {
+        this.socket.leaveRoom(this.room.roomID);
+    }
 }

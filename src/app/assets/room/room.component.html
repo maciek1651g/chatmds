@@ -1,4 +1,4 @@
-<div style="height: 100%; width: 100%">
+<mat-drawer-container class="container" autosize>
     <mat-toolbar color="primary" class="mat-toolbar toolbar">
         <div
             style="
@@ -30,17 +30,17 @@
                     </button>
                 </div>
             </ng-template>
-            <div>
-                <p
-                    style="margin: 0; cursor: pointer"
-                    matTooltip="Prześlij ID pokoju innym użytkownikom by mogli się z Tobą połączyć"
-                    (click)="copyRoomID()"
-                >
-                    ID pokoju: <span>{{ room.roomID }}</span>
-                </p>
-            </div>
+
+            <button
+                mat-icon-button
+                aria-label="icon-button with menu icon"
+                (click)="drawer.toggle()"
+            >
+                <mat-icon>info</mat-icon>
+            </button>
         </div>
     </mat-toolbar>
+
     <div class="main-content">
         <div class="chat-container">
             <ng-container *ngFor="let message of room.messages">
@@ -69,4 +69,29 @@
             </button>
         </div>
     </div>
-</div>
+    <mat-drawer #drawer class="sidenav" mode="side" position="end" opened>
+        <div class="drawer-inner-container">
+            <div style="padding: 20px 0">
+                <p style="font-weight: bold; text-align: center; font-size: 20px">
+                    ID pokoju
+                </p>
+                <p
+                    style="margin: 0; cursor: pointer"
+                    matTooltip="Prześlij ID pokoju innym użytkownikom by mogli się z Tobą połączyć"
+                    (click)="copyRoomID()"
+                >
+                    <span>{{ room.roomID }}</span>
+                </p>
+            </div>
+            <button
+                mat-raised-button
+                class="mat-list-item"
+                style="padding: 10px"
+                (click)="leaveRoom()"
+            >
+                <p style="margin: 0">Opuść pokój</p>
+                <mat-icon matListIcon>exit_to_app</mat-icon>
+            </button>
+        </div>
+    </mat-drawer>
+</mat-drawer-container>
