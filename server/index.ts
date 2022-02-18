@@ -19,6 +19,21 @@ const io = new Server(httpServer, {
 
 const rooms: Map<string, Room> = new Map<string, Room>();
 
+const createUniqueID = () => {
+    let roomID: string;
+    do {
+        roomID = io.engine.generateId();
+    } while (rooms.has(roomID));
+
+    return roomID;
+};
+
+const createNewRoom = (roomID: string, messages?: string[]): Room => {
+    const room: Room = { id: roomID, messages: messages || [] };
+    rooms.set(roomID, room);
+    return room;
+};
+
 app.use(compression());
 app.use(express.static("client", { maxAge: 3600000 }));
 
@@ -30,13 +45,8 @@ io.on("connection", (socket) => {
     console.log("Połączono");
 
     socket.on("createRoom", (message: null, fn) => {
-        let roomID: string;
-        do {
-            roomID = io.engine.generateId();
-        } while (rooms.has(roomID));
-
-        const room: Room = { id: roomID, messages: [] };
-        rooms.set(roomID, room);
+        const roomID: string = createUniqueID();
+        const room = createNewRoom(roomID);
         socket.join(roomID);
         fn(room);
     });
@@ -46,8 +56,18 @@ io.on("connection", (socket) => {
             socket.join(roomID);
             fn(rooms.get(roomID));
         } else {
-            fn(null);
+            const room = createNewRoom(roomID);
+            socket.join(roomID);
+            fn(room);
         }
+    });
+
+    socket.on("restoreRooms", (roomsDto: Room[], fn) => {
+        for (let i = 0; i < roomsDto.length; i++) {
+            const room = createNewRoom(roomsDto[i].id, roomsDto[i].messages);
+            socket.join(room.id);
+        }
+        fn(true);
     });
 
     socket.on("leaveRoom", (roomID: string, fn) => {

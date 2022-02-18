@@ -13,6 +13,18 @@ var io = new Server(httpServer, {
 /* options */
 });
 var rooms = new Map();
+var createUniqueID = function () {
+    var roomID;
+    do {
+        roomID = io.engine.generateId();
+    } while (rooms.has(roomID));
+    return roomID;
+};
+var createNewRoom = function (roomID, messages) {
+    var room = { id: roomID, messages: messages || [] };
+    rooms.set(roomID, room);
+    return room;
+};
 app.use(compression());
 app.use(express.static("client", { maxAge: 3600000 }));
 app.all("*", function (req, res, next) {
@@ -21,12 +33,8 @@ app.all("*", function (req, res, next) {
 io.on("connection", function (socket) {
     console.log("Połączono");
     socket.on("createRoom", function (message, fn) {
-        var roomID;
-        do {
-            roomID = io.engine.generateId();
-        } while (rooms.has(roomID));
-        var room = { id: roomID, messages: [] };
-        rooms.set(roomID, room);
+        var roomID = createUniqueID();
+        var room = createNewRoom(roomID);
         socket.join(roomID);
         fn(room);
     });
@@ -36,8 +44,17 @@ io.on("connection", function (socket) {
             fn(rooms.get(roomID));
         }
         else {
-            fn(null);
+            var room = createNewRoom(roomID);
+            socket.join(roomID);
+            fn(room);
         }
+    });
+    socket.on("restoreRooms", function (roomsDto, fn) {
+        for (var i = 0; i < roomsDto.length; i++) {
+            var room = createNewRoom(roomsDto[i].id, roomsDto[i].messages);
+            socket.join(room.id);
+        }
+        fn(true);
     });
     socket.on("leaveRoom", function (roomID, fn) {
         console.log();

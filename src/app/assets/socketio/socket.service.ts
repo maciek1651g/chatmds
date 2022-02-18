@@ -4,6 +4,7 @@ import RoomDto from "../../../../commonAssets/Room";
 import MessageDto from "../../../../commonAssets/MessageDto";
 import { Room } from "../roomInterface";
 import { BehaviorSubject } from "rxjs";
+import { LocalStorageService } from "../localStorage/local-storage.service";
 
 @Injectable({
     providedIn: "root",
@@ -15,10 +16,19 @@ export class SocketService {
         this.rooms
     );
 
-    constructor() {
+    constructor(private localStorage: LocalStorageService) {
         this.socket = io();
         this.socket.on("newMessage", (messageDto: MessageDto) => {
             this.addMessage(messageDto, false);
+        });
+
+        const data = this.localStorage.getData();
+        if (data) {
+            this.restoreAllRooms(data);
+        }
+
+        window.addEventListener("beforeunload", (e) => {
+            this.localStorage.saveData(this.rooms);
         });
     }
 
@@ -31,19 +41,21 @@ export class SocketService {
         });
     }
 
-    joinRoom(roomID: string, callback: (a: boolean) => void): void {
+    joinRoom(roomID: string, callback?: (a: boolean) => void): void {
         this.socket.emit("joinRoom", roomID, (data: RoomDto) => {
             if (data) {
                 this.addRoom(data);
             }
-            callback(!!data);
+            if (callback) {
+                callback(!!data);
+            }
         });
     }
 
     leaveRoom(roomID: string, callback?: (a: boolean) => void): void {
         this.socket.emit("leaveRoom", roomID, (status: boolean) => {
+            this.deleteRoom(roomID);
             if (status) {
-                this.deleteRoom(roomID);
                 if (callback) {
                     callback(true);
                 }
@@ -65,14 +77,14 @@ export class SocketService {
         });
     }
 
-    private addRoom(roomDto: RoomDto): void {
-        const idRoom = this.rooms.length + 2;
+    private addRoom(roomDto: RoomDto, roomName?: string): void {
+        const idRoom = this.rooms.length + 1;
         this.rooms.push({
             messages: roomDto.messages.map((message) => ({
                 text: message,
                 isCurrenUserMessage: false,
             })),
-            name: "Pokój " + (idRoom - 1),
+            name: roomName || "Pokój " + idRoom,
             roomID: roomDto.id,
         });
         this.observableRooms.next(this.rooms);
@@ -98,5 +110,22 @@ export class SocketService {
                 break;
             }
         }
+    }
+
+    private restoreAllRooms(rooms: Room[]) {
+        const roomsDto: RoomDto[] = rooms.map(
+            (room): RoomDto => ({
+                id: room.roomID,
+                messages: room.messages.map((message): string => message.text),
+            })
+        );
+        this.socket.emit("restoreRooms", roomsDto, (status: boolean) => {
+            if (status) {
+                console.log(rooms);
+                for (let i = 0; i < rooms.length; i++) {
+                    this.addRoom(roomsDto[i], rooms[i].name);
+                }
+            }
+        });
     }
 }
