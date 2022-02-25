@@ -13,7 +13,7 @@ import { Observable, Subject, takeUntil } from "rxjs";
 export class AppComponent implements OnInit, OnDestroy {
     title: string = "chatmds";
     optionMenu: number = 1;
-    rooms: Array<Room> = [];
+    rooms: Map<string, Room> = new Map<string, Room>();
     destroy$: Subject<boolean> = new Subject<boolean>();
 
     constructor(private socket: SocketService) {}
@@ -24,9 +24,9 @@ export class AppComponent implements OnInit, OnDestroy {
             .subscribe((rooms) => this.onChangeRooms(rooms));
     }
 
-    onChangeRooms(rooms: Room[]) {
+    onChangeRooms(rooms: Map<string, Room>) {
         this.rooms = rooms;
-        this.optionMenu = this.rooms.length + 1;
+        this.optionMenu = this.rooms.size + 1;
     }
 
     addRoom(): void {

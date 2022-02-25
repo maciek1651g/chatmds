@@ -11,24 +11,31 @@ import { LocalStorageService } from "../localStorage/local-storage.service";
 })
 export class SocketService {
     socket: Socket;
-    rooms: Array<Room> = [];
-    observableRooms: BehaviorSubject<Room[]> = new BehaviorSubject<Room[]>(
-        this.rooms
-    );
+    rooms: Map<string, Room> = new Map<string, Room>();
+    observableRooms: BehaviorSubject<Map<string, Room>> = new BehaviorSubject<
+        Map<string, Room>
+    >(this.rooms);
+    computerID: string;
 
     constructor(private localStorage: LocalStorageService) {
-        this.socket = io();
+        const computerID = this.localStorage.getComputerID();
+        this.computerID = computerID;
+        this.socket = io({
+            query: {
+                computerID: computerID,
+            },
+        });
         this.socket.on("newMessage", (messageDto: MessageDto) => {
             this.addMessage(messageDto, false);
         });
 
-        const data = this.localStorage.getData();
+        const data = this.localStorage.getRooms();
         if (data) {
             this.restoreAllRooms(data);
         }
 
         window.addEventListener("beforeunload", (e) => {
-            this.localStorage.saveData(this.rooms);
+            this.localStorage.saveRooms(this.rooms);
         });
     }
 
@@ -78,8 +85,8 @@ export class SocketService {
     }
 
     private addRoom(roomDto: RoomDto, roomName?: string): void {
-        const idRoom = this.rooms.length + 1;
-        this.rooms.push({
+        const idRoom = this.rooms.size + 1;
+        this.rooms.set(roomDto.id, {
             messages: roomDto.messages.map((message) => ({
                 text: message,
                 isCurrenUserMessage: false,
@@ -91,39 +98,30 @@ export class SocketService {
     }
 
     private addMessage(messageDto: MessageDto, isCurrentUserMessage: boolean) {
-        for (let i = 0; i < this.rooms.length; i++) {
-            if (this.rooms[i].roomID === messageDto.roomID) {
-                this.rooms[i].messages.unshift({
-                    text: messageDto.text,
-                    isCurrenUserMessage: isCurrentUserMessage,
-                });
-                break;
-            }
-        }
+        this.rooms.get(messageDto.roomID)?.messages.unshift({
+            text: messageDto.text,
+            isCurrenUserMessage: isCurrentUserMessage,
+        });
     }
 
     private deleteRoom(roomID: string) {
-        for (let i = 0; i < this.rooms.length; i++) {
-            if (this.rooms[i].roomID === roomID) {
-                this.rooms.splice(i, 1);
-                this.observableRooms.next(this.rooms);
-                break;
-            }
-        }
+        this.rooms.delete(roomID);
+        this.observableRooms.next(this.rooms);
     }
 
-    private restoreAllRooms(rooms: Room[]) {
-        const roomsDto: RoomDto[] = rooms.map(
-            (room): RoomDto => ({
-                id: room.roomID,
-                messages: room.messages.map((message): string => message.text),
-            })
-        );
+    private restoreAllRooms(rooms: Map<string, Room>) {
+        const roomsDto: RoomDto[] = [];
+        rooms.forEach((value, key) => {
+            roomsDto.push({
+                id: value.roomID,
+                messages: value.messages.map((message): string => message.text),
+            });
+        });
         this.socket.emit("restoreRooms", roomsDto, (status: boolean) => {
             if (status) {
-                console.log(rooms);
-                for (let i = 0; i < rooms.length; i++) {
-                    this.addRoom(roomsDto[i], rooms[i].name);
+                const roomsIterator = rooms.entries();
+                for (let i = 0; i < rooms.size; i++) {
+                    this.addRoom(roomsDto[i], roomsIterator.next().value.name);
                 }
             }
         });

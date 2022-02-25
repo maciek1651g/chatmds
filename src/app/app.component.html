@@ -14,12 +14,14 @@
                         Strona główna
                     </mat-list-option>
                     <mat-divider class="divider"></mat-divider>
-                    <ng-container *ngFor="let room of rooms; let i = index">
+                    <ng-container
+                        *ngFor="let room of rooms | keyvalue; let i = index"
+                    >
                         <mat-list-option
                             [value]="i + 2"
                             [selected]="optionMenu === i + 2"
                         >
-                            {{ room.name }}
+                            {{ room.value.name }}
                         </mat-list-option>
                     </ng-container>
                     <mat-divider class="divider"></mat-divider>
@@ -39,8 +41,13 @@
                         *ngSwitchCase="1"
                         (addNewRoom)="addRoom()"
                     ></app-main-page>
-                    <ng-container *ngFor="let room of rooms; let i = index">
-                        <app-room *ngSwitchCase="i + 2" [room]="room"></app-room>
+                    <ng-container
+                        *ngFor="let room of rooms | keyvalue; let i = index"
+                    >
+                        <app-room
+                            *ngSwitchCase="i + 2"
+                            [room]="room.value"
+                        ></app-room>
                     </ng-container>
                 </container-element>
             </div>

@@ -52,6 +52,7 @@ app.all("*", function (req, res, next) {
 
 io.on("connection", (socket) => {
     console.log("Połączono");
+    console.log(socket.handshake.query.computerID);
 
     socket.on("createRoom", (message: null, fn) => {
         const roomID: string = createUniqueID();

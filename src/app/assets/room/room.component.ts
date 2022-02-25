@@ -62,7 +62,6 @@ export class RoomComponent implements AfterViewInit {
     private isUserNearBottom(): boolean {
         const offset = 150;
         const position = this.chatContainer.nativeElement.scrollTop;
-        console.log(position);
         return position + offset > 0;
     }
 }
