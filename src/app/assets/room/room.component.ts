@@ -7,7 +7,7 @@ import {
     ViewChild,
     ViewChildren,
 } from "@angular/core";
-import { Room } from "../roomInterface";
+import { ClientRoom } from "../roomInterface";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { SocketService } from "../socketio/socket.service";
 
@@ -17,20 +17,20 @@ import { SocketService } from "../socketio/socket.service";
     styleUrls: ["./room.component.css"],
 })
 export class RoomComponent implements AfterViewInit {
-    @Input() room!: Room;
+    @Input() room!: ClientRoom;
     editNameMode = false;
     message?: string;
     @ViewChild("chatContainer") chatContainer!: ElementRef;
     @ViewChildren("message") messages!: QueryList<any>;
 
-    constructor(private snackBar: MatSnackBar, private socket: SocketService) {}
+    constructor(private snackBar: MatSnackBar, public socket: SocketService) {}
 
     ngAfterViewInit(): void {
         this.messages.changes.subscribe((_) => this.onAddMessage());
     }
 
     copyRoomID() {
-        navigator.clipboard.writeText(this.room.roomID);
+        navigator.clipboard.writeText(this.room.id);
         this.snackBar.open("Skopiowano ID pokoju", "Zamknij", {
             duration: 1500,
             horizontalPosition: "end",
@@ -40,13 +40,13 @@ export class RoomComponent implements AfterViewInit {
 
     sendMessage() {
         if (this.message && this.message !== "") {
-            this.socket.sendMessage(this.message, this.room.roomID);
+            this.socket.sendMessage(this.message, this.room.id);
             this.message = "";
         }
     }
 
     leaveRoom(): void {
-        this.socket.leaveRoom(this.room.roomID);
+        this.socket.leaveRoom(this.room.id);
     }
 
     onAddMessage(): void {

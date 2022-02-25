@@ -46,7 +46,7 @@
             <ng-container *ngFor="let message of room.messages">
                 <app-message
                     [message]="message.text"
-                    [isCurrentUserMessage]="message.isCurrenUserMessage"
+                    [isCurrentUserMessage]="message.computerID === socket.computerID"
                     #message
                 ></app-message>
             </ng-container>
@@ -81,7 +81,7 @@
                     matTooltip="Prześlij ID pokoju innym użytkownikom by mogli się z Tobą połączyć"
                     (click)="copyRoomID()"
                 >
-                    <span>{{ room.roomID }}</span>
+                    <span>{{ room.id }}</span>
                 </p>
             </div>
             <button

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Room } from "../roomInterface";
+import { ClientRoom } from "../roomInterface";
 import { v4 as uuidv4 } from "uuid";
 
 @Injectable({
@@ -10,7 +10,7 @@ export class LocalStorageService {
         localStorage.setItem("computerID", computerID);
     }
 
-    saveRooms(rooms: Map<string, Room>) {
+    saveRooms(rooms: Map<string, ClientRoom>) {
         rooms.forEach((value) => {
             if (value.messages.length > 10) {
                 value.messages.length = 10;
@@ -32,7 +32,7 @@ export class LocalStorageService {
         }
     }
 
-    getRooms(): Map<string, Room> | null {
+    getRooms(): Map<string, ClientRoom> | null {
         const data = localStorage.getItem("myRooms");
 
         if (data) return new Map(Object.entries(JSON.parse(data)));

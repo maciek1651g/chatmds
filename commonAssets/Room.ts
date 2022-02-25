@@ -1,6 +1,15 @@
-interface Room {
+export interface ServerRoom {
     id: string;
-    messages: string[];
+    messages: Message[];
 }
 
-export default Room;
+export interface Message {
+    text: string;
+    computerID: string;
+}
+
+export interface MessageDto {
+    text: string;
+    roomID: string;
+    computerID: string;
+}

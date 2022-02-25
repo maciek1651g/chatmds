@@ -30,9 +30,12 @@ var createNewRoom = function (roomID, messages) {
 var addMessage = function (messageDto) {
     var room = rooms.get(messageDto.roomID);
     if (room) {
-        room.messages.push(messageDto.text);
+        room.messages.push(messageDto);
         if (room.messages.length > 10)
             room.messages.length = 10;
+    }
+    else {
+        console.log("room does not exist");
     }
 };
 app.use(compression());
@@ -42,7 +45,7 @@ app.all("*", function (req, res, next) {
 });
 io.on("connection", function (socket) {
     console.log("Połączono");
-    console.log(socket.handshake.query.computerID);
+    socket.data.computerID = socket.handshake.query.computerID;
     socket.on("createRoom", function (message, fn) {
         var roomID = createUniqueID();
         var room = createNewRoom(roomID);
@@ -60,15 +63,15 @@ io.on("connection", function (socket) {
             fn(room);
         }
     });
-    socket.on("restoreRooms", function (roomsDto, fn) {
-        for (var i = 0; i < roomsDto.length; i++) {
-            var room = createNewRoom(roomsDto[i].id, roomsDto[i].messages);
+    socket.on("restoreRooms", function (rooms, fn) {
+        rooms = new Map(Object.entries(rooms));
+        rooms.forEach(function (value) {
+            var room = createNewRoom(value.id, value.messages);
             socket.join(room.id);
-        }
+        });
         fn(true);
     });
     socket.on("leaveRoom", function (roomID, fn) {
-        console.log();
         if (rooms.has(roomID)) {
             socket.leave(roomID);
             fn(true);

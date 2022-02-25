@@ -1,10 +1,7 @@
-export interface Room {
-    name: string;
-    roomID: string;
-    messages: Array<Message>;
-}
+import { Message } from "../../../commonAssets/Room";
 
-export interface Message {
-    text: string;
-    isCurrenUserMessage: boolean;
+export interface ClientRoom {
+    name: string;
+    id: string;
+    messages: Message[];
 }

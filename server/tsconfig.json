@@ -9,7 +9,6 @@
   },
   "files": [
     "index.ts",
-    "../commonAssets/Room.ts",
-    "../commonAssets/MessageDto.ts"
+    "../commonAssets/Room.ts"
   ]
 }

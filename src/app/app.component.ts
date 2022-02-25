@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { MatSelectionListChange } from "@angular/material/list";
-import { Room } from "./assets/roomInterface";
-import RoomDto from "../../commonAssets/Room";
+import { ClientRoom } from "./assets/roomInterface";
 import { SocketService } from "./assets/socketio/socket.service";
-import { Observable, Subject, takeUntil } from "rxjs";
+import { Subject, takeUntil } from "rxjs";
 
 @Component({
     selector: "app-root",
@@ -13,7 +12,7 @@ import { Observable, Subject, takeUntil } from "rxjs";
 export class AppComponent implements OnInit, OnDestroy {
     title: string = "chatmds";
     optionMenu: number = 1;
-    rooms: Map<string, Room> = new Map<string, Room>();
+    rooms: Map<string, ClientRoom> = new Map<string, ClientRoom>();
     destroy$: Subject<boolean> = new Subject<boolean>();
 
     constructor(private socket: SocketService) {}
@@ -24,7 +23,7 @@ export class AppComponent implements OnInit, OnDestroy {
             .subscribe((rooms) => this.onChangeRooms(rooms));
     }
 
-    onChangeRooms(rooms: Map<string, Room>) {
+    onChangeRooms(rooms: Map<string, ClientRoom>) {
         this.rooms = rooms;
         this.optionMenu = this.rooms.size + 1;
     }

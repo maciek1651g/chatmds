@@ -4,8 +4,7 @@ import { Server } from "socket.io";
 import path from "path";
 import compression from "compression";
 import { fileURLToPath } from "url";
-import Room from "../commonAssets/Room";
-import MessageDto from "../commonAssets/MessageDto";
+import { Message, MessageDto, ServerRoom } from "../commonAssets/Room";
 
 const port = process.env["PORT"] || 3000;
 const __filename = fileURLToPath(import.meta.url);
@@ -17,7 +16,7 @@ const io = new Server(httpServer, {
     /* options */
 });
 
-const rooms: Map<string, Room> = new Map<string, Room>();
+const rooms: Map<string, ServerRoom> = new Map<string, ServerRoom>();
 
 const createUniqueID = () => {
     let roomID: string;
@@ -28,9 +27,9 @@ const createUniqueID = () => {
     return roomID;
 };
 
-const createNewRoom = (roomID: string, messages?: string[]): Room => {
+const createNewRoom = (roomID: string, messages?: Message[]): ServerRoom => {
     if (messages && messages.length > 10) messages.length = 10;
-    const room: Room = { id: roomID, messages: messages || [] };
+    const room: ServerRoom = { id: roomID, messages: messages || [] };
     rooms.set(roomID, room);
     return room;
 };
@@ -38,8 +37,10 @@ const createNewRoom = (roomID: string, messages?: string[]): Room => {
 const addMessage = (messageDto: MessageDto) => {
     const room = rooms.get(messageDto.roomID);
     if (room) {
-        room.messages.push(messageDto.text);
+        room.messages.push(messageDto);
         if (room.messages.length > 10) room.messages.length = 10;
+    } else {
+        console.log("room does not exist");
     }
 };
 
@@ -52,7 +53,7 @@ app.all("*", function (req, res, next) {
 
 io.on("connection", (socket) => {
     console.log("Połączono");
-    console.log(socket.handshake.query.computerID);
+    socket.data.computerID = socket.handshake.query.computerID;
 
     socket.on("createRoom", (message: null, fn) => {
         const roomID: string = createUniqueID();
@@ -72,16 +73,16 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("restoreRooms", (roomsDto: Room[], fn) => {
-        for (let i = 0; i < roomsDto.length; i++) {
-            const room = createNewRoom(roomsDto[i].id, roomsDto[i].messages);
+    socket.on("restoreRooms", (rooms: Map<string, ServerRoom>, fn) => {
+        rooms = new Map(Object.entries(rooms));
+        rooms.forEach((value) => {
+            const room = createNewRoom(value.id, value.messages);
             socket.join(room.id);
-        }
+        });
         fn(true);
     });
 
     socket.on("leaveRoom", (roomID: string, fn) => {
-        console.log();
         if (rooms.has(roomID)) {
             socket.leave(roomID);
             fn(true);
