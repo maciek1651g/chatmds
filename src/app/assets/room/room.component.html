@@ -42,11 +42,12 @@
     </mat-toolbar>
 
     <div class="main-content">
-        <div class="chat-container">
+        <div #chatContainer class="chat-container">
             <ng-container *ngFor="let message of room.messages">
                 <app-message
                     [message]="message.text"
                     [isCurrentUserMessage]="message.isCurrenUserMessage"
+                    #message
                 ></app-message>
             </ng-container>
         </div>

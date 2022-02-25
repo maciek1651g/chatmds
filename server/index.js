@@ -21,9 +21,19 @@ var createUniqueID = function () {
     return roomID;
 };
 var createNewRoom = function (roomID, messages) {
+    if (messages && messages.length > 10)
+        messages.length = 10;
     var room = { id: roomID, messages: messages || [] };
     rooms.set(roomID, room);
     return room;
+};
+var addMessage = function (messageDto) {
+    var room = rooms.get(messageDto.roomID);
+    if (room) {
+        room.messages.push(messageDto.text);
+        if (room.messages.length > 10)
+            room.messages.length = 10;
+    }
 };
 app.use(compression());
 app.use(express.static("client", { maxAge: 3600000 }));
@@ -67,8 +77,7 @@ io.on("connection", function (socket) {
         }
     });
     socket.on("sendMessage", function (messageDto, fn) {
-        var _a;
-        (_a = rooms.get(messageDto.roomID)) === null || _a === void 0 ? void 0 : _a.messages.push(messageDto.text);
+        addMessage(messageDto);
         socket.broadcast.to(messageDto.roomID).emit("newMessage", messageDto);
         fn();
     });

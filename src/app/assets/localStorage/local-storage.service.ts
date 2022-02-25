@@ -6,6 +6,12 @@ import { Room } from "../roomInterface";
 })
 export class LocalStorageService {
     saveData(rooms: Room[]) {
+        for (let i = 0; i < rooms.length; i++) {
+            if (rooms[i].messages.length > 10) {
+                rooms[i].messages.length = 10;
+            }
+        }
+
         localStorage.setItem("myRooms", JSON.stringify(rooms));
     }
 

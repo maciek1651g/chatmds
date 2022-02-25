@@ -29,9 +29,18 @@ const createUniqueID = () => {
 };
 
 const createNewRoom = (roomID: string, messages?: string[]): Room => {
+    if (messages && messages.length > 10) messages.length = 10;
     const room: Room = { id: roomID, messages: messages || [] };
     rooms.set(roomID, room);
     return room;
+};
+
+const addMessage = (messageDto: MessageDto) => {
+    const room = rooms.get(messageDto.roomID);
+    if (room) {
+        room.messages.push(messageDto.text);
+        if (room.messages.length > 10) room.messages.length = 10;
+    }
 };
 
 app.use(compression());
@@ -81,7 +90,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("sendMessage", (messageDto: MessageDto, fn) => {
-        rooms.get(messageDto.roomID)?.messages.push(messageDto.text);
+        addMessage(messageDto);
         socket.broadcast.to(messageDto.roomID).emit("newMessage", messageDto);
         fn();
     });

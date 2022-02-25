@@ -93,7 +93,7 @@ export class SocketService {
     private addMessage(messageDto: MessageDto, isCurrentUserMessage: boolean) {
         for (let i = 0; i < this.rooms.length; i++) {
             if (this.rooms[i].roomID === messageDto.roomID) {
-                this.rooms[i].messages.push({
+                this.rooms[i].messages.unshift({
                     text: messageDto.text,
                     isCurrenUserMessage: isCurrentUserMessage,
                 });
