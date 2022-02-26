@@ -27,11 +27,9 @@ export class SocketService {
         this.socket.on("newMessage", (messageDto: MessageDto) => {
             this.addMessage(messageDto);
         });
-
-        const data = this.localStorage.getRooms();
-        if (data) {
-            this.restoreAllRooms(data);
-        }
+        this.socket.on("connect", () => {
+            this.restoreAllRooms();
+        });
 
         window.addEventListener("beforeunload", (e) => {
             this.localStorage.saveRooms(this.rooms);
@@ -94,7 +92,7 @@ export class SocketService {
             name: roomName || "Pokój " + idRoom,
             id: room.id,
         });
-        this.observableRooms.next(this.rooms);
+        this.updateRooms(this.rooms);
     }
 
     private addMessage(messageDto: MessageDto) {
@@ -103,17 +101,37 @@ export class SocketService {
 
     private deleteRoom(roomID: string) {
         this.rooms.delete(roomID);
-        this.observableRooms.next(this.rooms);
+        this.updateRooms(this.rooms);
     }
 
-    private restoreAllRooms(rooms: Map<string, ClientRoom>) {
-        const roomsDto = Object.fromEntries(rooms);
-        this.socket.emit("restoreRooms", roomsDto, (status: boolean) => {
-            if (status) {
-                rooms.forEach((value) => {
-                    this.addRoom(value, value.name);
-                });
-            }
-        });
+    private restoreAllRooms() {
+        const rooms = this.getRooms();
+        if (rooms) {
+            const roomsDto = Object.fromEntries(rooms);
+            this.socket.emit(
+                "restoreRooms",
+                roomsDto,
+                (restoredRooms: Map<string, ServerRoom>) => {
+                    restoredRooms = new Map(Object.entries(restoredRooms));
+                    [...restoredRooms.keys()].forEach((key) => {
+                        // @ts-ignore
+                        this.addRoom(restoredRooms.get(key), rooms.get(key).name);
+                    });
+                }
+            );
+        }
+    }
+
+    private getRooms() {
+        if (this.rooms.size > 0) {
+            return this.rooms;
+        } else {
+            return this.localStorage.getRooms();
+        }
+    }
+
+    private updateRooms(rooms: Map<string, ClientRoom>) {
+        this.observableRooms.next(rooms);
+        this.localStorage.saveRooms(rooms);
     }
 }

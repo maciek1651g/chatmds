@@ -73,13 +73,20 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("restoreRooms", (rooms: Map<string, ServerRoom>, fn) => {
-        rooms = new Map(Object.entries(rooms));
-        rooms.forEach((value) => {
-            const room = createNewRoom(value.id, value.messages);
+    socket.on("restoreRooms", (roomsDto: Map<string, ServerRoom>, fn) => {
+        const roomsToSendBack = new Map<string, ServerRoom>();
+        roomsDto = new Map(Object.entries(roomsDto));
+        roomsDto.forEach((room) => {
+            if (rooms.has(room.id)) {
+                // @ts-ignore
+                roomsToSendBack.set(room.id, rooms.get(room.id));
+            } else {
+                const newRoom = createNewRoom(room.id, room.messages);
+                roomsToSendBack.set(room.id, newRoom);
+            }
             socket.join(room.id);
         });
-        fn(true);
+        fn(Object.fromEntries(roomsToSendBack));
     });
 
     socket.on("leaveRoom", (roomID: string, fn) => {

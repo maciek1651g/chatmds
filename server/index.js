@@ -63,13 +63,21 @@ io.on("connection", function (socket) {
             fn(room);
         }
     });
-    socket.on("restoreRooms", function (rooms, fn) {
-        rooms = new Map(Object.entries(rooms));
-        rooms.forEach(function (value) {
-            var room = createNewRoom(value.id, value.messages);
+    socket.on("restoreRooms", function (roomsDto, fn) {
+        var roomsToSendBack = new Map();
+        roomsDto = new Map(Object.entries(roomsDto));
+        roomsDto.forEach(function (room) {
+            if (rooms.has(room.id)) {
+                // @ts-ignore
+                roomsToSendBack.set(room.id, rooms.get(room.id));
+            }
+            else {
+                var newRoom = createNewRoom(room.id, room.messages);
+                roomsToSendBack.set(room.id, newRoom);
+            }
             socket.join(room.id);
         });
-        fn(true);
+        fn(Object.fromEntries(roomsToSendBack));
     });
     socket.on("leaveRoom", function (roomID, fn) {
         if (rooms.has(roomID)) {
